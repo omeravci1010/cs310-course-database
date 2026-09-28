@@ -9,24 +9,45 @@ public class DAOUtility {
     public static final int TERMID_SP26 = 1;
     
     public static String getResultSetAsJson(ResultSet rs) {
+    
+    JsonArray records = new JsonArray();
+    
+    try {
         
-        JsonArray records = new JsonArray();
-        
-        try {
-        
-            if (rs != null) {
-
-                // INSERT YOUR CODE HERE
-
-            }
+        if (rs != null) {
             
+            ResultSetMetaData metadata = rs.getMetaData();
+            int columnCount = metadata.getColumnCount();
+            
+            while (rs.next()) {
+                
+                JsonObject record = new JsonObject();
+                
+                for (int i = 1; i <= columnCount; i++) {
+                    
+                    String columnName = metadata.getColumnName(i);
+                    Object value = rs.getObject(i);
+                    
+                    if (value instanceof java.sql.Time) {
+                        value = value.toString();
+                    }
+                    else if (value != null) {
+                        value = value.toString();
+                    }
+                    
+                    record.put(columnName, value);
+                }
+                
+                records.add(record);
+            }
         }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        return Jsoner.serialize(records);
         
     }
+    catch (Exception e) {
+        e.printStackTrace();
+    }
+    
+    return Jsoner.serialize(records);
+}
     
 }
